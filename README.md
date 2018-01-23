@@ -31,9 +31,10 @@ Data stream is a question this frame try to solve too.
 
 ## todo
 
--[ ] add Data Persistence Interface
--[ ] add truly service and run it
--[ ] add user guide
+- add watcher callback
+- add Data Persistence Interface
+- add truly service and run it
+- add user guide
 
 
 ## If you don't make sure you need this repo or not, you can see this:
