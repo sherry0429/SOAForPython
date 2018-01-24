@@ -5,7 +5,7 @@
 ## UserGuide:
 
 + extend WatcherHandler / ServiceProgramTemplate
-  + src.hander, src.service is two example
+  + src.hander, src.service are two examples
 + start core
   + src.start_core.py
 + send ServiceParamTemplate class by redis
