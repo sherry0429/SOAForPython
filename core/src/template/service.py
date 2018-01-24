@@ -4,15 +4,16 @@
 Copyright (C) 2017 tianyou pan <sherry0429 at SOAPython>
 this class is service program template, it's include a param template and a egg template
 """
-from param import ServiceParamTemplate
 import os
 import shutil
+import handler
 
 
 class ServiceProgramTemplate(object):
 
     def __init__(self):
         self.param_template = None
+        self.watcher_handler = None
 
     def log_thing(self, log_str):
         print log_str
@@ -54,6 +55,19 @@ class ServiceProgramTemplate(object):
                 self.param_template.s_service_name = service_name
         else:
             return
+
+        import_hander_cmd = 'from handler import %sHandler' % self.param_template.s_service_name.upper()
+        init_handler_cmd = 'self.watcher_handler = %sHandler()' % self.param_template.s_service_name.upper()
+        # todo here use load modules / reload in future, so handler module can hot update
+        try:
+            exec import_hander_cmd
+            exec init_handler_cmd
+        except Exception, error_msg:
+            self.log_thing(error_msg)
+            return
+        self.prepare_input_file()
+
+    def prepare_input_file(self):
         # get input file in param template
         input_file = self.param_template.g_input_file
         if "ftp://" in input_file:
@@ -63,7 +77,6 @@ class ServiceProgramTemplate(object):
         else:
             # in db, hdfs, or other...
             pass
-
 
 
 

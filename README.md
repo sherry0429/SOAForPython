@@ -2,7 +2,19 @@
 
 ---
 
-## Notice ! This frame is developing, it's unstable, so do not use it.
+## UserGuide:
+
++ extend WatcherHandler / ServiceProgramTemplate
+  + src.hander, src.service is two example
++ start core
+  + src.start_core.py
++ send ServiceParamTemplate class by redis
+  + core.test.src 
++ service will start and running like you define in your child classes
+  + core.test.plugin have a service example, it's develop by other, we can not see / call / control
+
++ this framework can develop service's (develop by other) handler / callback quickly, call them simply. 
+
 
 ---
 
@@ -49,5 +61,10 @@ Data stream is a question this frame try to solve too.
 this system is a small, pure and clear core, to make developer add new service simply, 
 finally, developer only code some callback, fill template, and all services running on themselves way
 
+## project structure
+
++ developer develop many handler about every service
++ send param_template to start service and watcher
++ use handler to define service lifecycle's operation
 
 

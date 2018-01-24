@@ -12,7 +12,6 @@ param in SpecialParam means ServiceInstance's param, template will not use them,
 from abc import ABCMeta, abstractmethod
 import time
 import base64
-from hander import WatcherHandler
 
 
 class ServiceParamTemplate(object):
@@ -29,23 +28,17 @@ class ServiceParamTemplate(object):
         'g_service_path'
     ]
 
-    def __init__(self, work_path, service_path, input_file, output_file, handler, service_id = None):
+    def __init__(self, work_path, service_path, input_file, output_file, **kwargs):
         # down this include lots of param all service use
         self.g_work_path = work_path  # service's work path, it's must be an empty path.
         self.g_input_file = input_file  # input file name
         self.g_output_file = output_file  # output file name
         self.g_service_path = service_path  # python scripts path, like jet3d.py
-        if service_id is not None:
-            self.g_service_id = service_id  # service id, if not be set, it's will e a md5 about service_path & time
-        else:
-            self.g_service_id = self.make_service_id()
+        self.g_service_id = None
+
         # down this include some switch, changed them will change engine's operation about template
         self.o_watcher_enabled = True  # whether boot watcher, if not, all callback will not be called.
         self.o_watcher_interal = 3
-        if handler.__class__.__bases__[0].__name__ == "WatcherHandler":
-            self.o_watcher_handler = self.transform_handler(handler)
-        else:
-            raise Exception('error type about handler %s' % type(handler))
         """
         down this make every template unique, but if not set, every template instance have a md5 make it different
         also, you can register param on it, and define a dict, it's will transport to service scripts,
@@ -72,6 +65,14 @@ class ServiceParamTemplate(object):
         self.s_user_id = None
         self.s_service_args = dict()
 
+        # fill custom attr:
+        for (k, v) in kwargs.items():
+            setattr(self, k, v)
+
+        # service id, if not be set, it's will e a md5 about service_path & time
+        if self.g_service_id is None:
+            self.g_service_id = self.make_service_id()
+
     def register_param(self, param_dict):
         if not isinstance(param_dict, dict):
             self.log_thing("type error, param is not dict")
@@ -92,21 +93,6 @@ class ServiceParamTemplate(object):
                 elif isinstance(p_v, dict):
                     exec 'self.s_%s = dict()' % (p_k)
                 exec 'self.param_set.add(\'s_%s\')' % (p_k)
-
-    def transform_handler(self, user_handler):
-        """
-        transform user side class to server side class
-        :param user_handler:
-        :return:
-        """
-        watch_handler = WatcherHandler()
-        import types
-        watch_handler.after_watch_callback = types.MethodType(user_handler.after_watch_callback, watch_handler)
-        watch_handler.before_watch_callback = types.MethodType(user_handler.before_watch_callback, watch_handler)
-        watch_handler.file_change_callback = types.MethodType(user_handler.file_change_callback, watch_handler)
-        # todo here set attr's attribute read successful in core, but callback method read failed
-        setattr(watch_handler, 'a', 'b')
-        return watch_handler
 
     def get_param(self):
         return self.s_param_set

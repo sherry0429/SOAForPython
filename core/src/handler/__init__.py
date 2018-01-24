@@ -3,7 +3,7 @@
 """
 Copyright (C) 2017 tianyou pan <sherry0429 at SOAPython>
 """
-from watcher_handler import WatcherHandler
+from service_test import SERVICETESTHandler
 
 
-__all__ = ['WatcherHandler']
+__all__ = ['SERVICETESTHandler']
