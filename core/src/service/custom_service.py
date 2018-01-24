@@ -39,5 +39,5 @@ class CustomService(ServiceProgramTemplate):
         super(CustomService, self).build()
         pass
 
-    def prepare_input_file(self):
+    def prepare_input_file(self, now_service):
         pass

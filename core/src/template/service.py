@@ -6,7 +6,6 @@ this class is service program template, it's include a param template and a egg 
 """
 import os
 import shutil
-import handler
 
 
 class ServiceProgramTemplate(object):
@@ -55,9 +54,8 @@ class ServiceProgramTemplate(object):
                 self.param_template.s_service_name = service_name
         else:
             return
-
-        import_hander_cmd = 'from handler import %sHandler' % self.param_template.s_service_name.upper()
-        init_handler_cmd = 'self.watcher_handler = %sHandler()' % self.param_template.s_service_name.upper()
+        import_hander_cmd = 'from handler import %sHandler' % self.param_template.s_service_name.split(".")[0].upper()
+        init_handler_cmd = 'self.watcher_handler = %sHandler()' % self.param_template.s_service_name.split(".")[0].upper()
         # todo here use load modules / reload in future, so handler module can hot update
         try:
             exec import_hander_cmd
@@ -65,21 +63,19 @@ class ServiceProgramTemplate(object):
         except Exception, error_msg:
             self.log_thing(error_msg)
             return
-        self.prepare_input_file()
 
-    def prepare_input_file(self):
+    def prepare_input_file(self, now_service):
+        # todo add base operation about this
+        pass
         # get input file in param template
-        input_file = self.param_template.g_input_file
-        if "ftp://" in input_file:
-            pass
-        elif os.path.exists(input_file):
-            shutil.copy2(input_file, work_path)
-        else:
-            # in db, hdfs, or other...
-            pass
-
-
-
+        # input_file = self.param_template.g_input_file
+        # if "ftp://" in input_file:
+        #     pass
+        # elif os.path.exists(input_file):
+        #     shutil.copy2(input_file, work_path)
+        # else:
+        #     # in db, hdfs, or other...
+        #     pass
 
 
 

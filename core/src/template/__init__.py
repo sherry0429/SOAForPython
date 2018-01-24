@@ -7,5 +7,5 @@ this package include lots of define about param file
 from param import ServiceParamTemplate
 from service import ServiceProgramTemplate
 
-
-__all__ = ['ServiceParamTemplate', 'ServiceProgramTemplate']
+__all__ = ['ServiceParamTemplate',
+           'ServiceProgramTemplate']
