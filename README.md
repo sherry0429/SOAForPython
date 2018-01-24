@@ -11,7 +11,7 @@
 + send ServiceParamTemplate class by redis
   + core.test.src 
 + service will start and running like you define in your child classes
-  + core.test.plugin have a service example, it's develop by other, we can not see / call / control
+  + core.test.plugin have a service example, it's develop by other, we can not see / control / change / hook
 
 + this framework can develop service's (develop by other) handler / callback quickly, call them simply. 
 
@@ -43,10 +43,9 @@ Data stream is a question this frame try to solve too.
 
 ## todo
 
-- add watcher callback
 - add Data Persistence Interface
-- add truly service and run it
-- add user guide
+- add Base prepare_input_file method
+- when a lots of service appear, and delay each other, make a base class to extend
 
 
 ## If you don't make sure you need this repo or not, you can see this:
