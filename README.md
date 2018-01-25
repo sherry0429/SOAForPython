@@ -2,6 +2,36 @@
 
 ---
 
+## project structure
+----
+#### server side
+
++ core engine, service engine, watcher engine
++ each service have one service process start by service engine, one watcher thread start by watcher engine
++ service pre work build by core engine
++ each service have param template, define it's detail, template must can be pickled
+
+#### develop side
+
++ can rewrite 3 callback about watcher:
+  + file_change_callback : it's be called every interval and return a service instance & work path's file list
+  + before_watch_callback : it's be called before watcher thread be started.
+  + after_watch_callback : it's be called when watcher thread will be stopped. 
++ 2 can rewrite 2 method about service
+  + build : it's be call in core, it's do pre work before start service
+  + prepare_input_file : it's be called after build, and it's prepare file that service need
+
+#### user side
+
++ can make a param template extends ServiceParamTemplate
++ can add new attributes in ServiceParamTemplate (develop side can use them)
+
+----
+
++ server side and user side is process isolation, core always running, developer make handler / service, core reload that two packages, and new version be built  
+
+---
+
 ## UserGuide:
 
 + extend WatcherHandler / ServiceProgramTemplate
@@ -67,35 +97,5 @@ Data stream is a question this frame try to solve too.
 
 this system is a small, pure and clear core, to make developer add new service simply, 
 finally, developer only code some callback, fill template, and all services running on themselves way
-
-## project structure
-----
-#### server side
-
-+ core engine, service engine, watcher engine
-+ each service have one service process start by service engine, one watcher thread start by watcher engine
-+ service pre work build by core engine
-+ each service have param template, define it's detail, template must can be pickled
-
-#### develop side
-
-+ can rewrite 3 callback about watcher:
-  + file_change_callback : it's be called every interval and return a service instance & work path's file list
-  + before_watch_callback : it's be called before watcher thread be started.
-  + after_watch_callback : it's be called when watcher thread will be stopped. 
-+ 2 can rewrite 2 method about service
-  + build : it's be call in core, it's do pre work before start service
-  + prepare_input_file : it's be called after build, and it's prepare file that service need
-
-#### user side
-
-+ can make a param template extends ServiceParamTemplate
-+ can add new attributes in ServiceParamTemplate (develop side can use them)
-
-----
-
-+ server side and user side is process isolation, core always running, developer make handler / service, core reload that two packages, and new version be built  
-
-
 
 
