@@ -44,7 +44,7 @@ class WatcherThread(Thread):
 
     def run(self):
         scheduler = ParamScheduler(self.conf)
-        self.service_instance.watcher_handler.before_watch_callback()
+        self.service_instance.watcher_handler.before_watch_callback(self.service_instance)
         service_id = self.service_instance.param_template.g_service_id
         service_name = self.service_instance.param_template.s_service_name
         workpath = self.service_instance.param_template.g_work_path + "/" + self.service_instance.param_template.g_service_id
@@ -52,12 +52,12 @@ class WatcherThread(Thread):
         if workpath is not None and os.path.exists(workpath):
             while True:
                 list_file = os.listdir(workpath)
-                user_signal = self.service_instance.watcher_handler.file_change_callback(len(list_file))
+                user_signal = self.service_instance.watcher_handler.file_change_callback(len(list_file), self.service_instance)
                 if user_signal == -1 or scheduler.check_service_state(service_id) is not None:
                     break
                 # todo except user signal, when check redis-key [service_id] finished, this loop also break
                 time.sleep(self.interval)
-        self.service_instance.watcher_handler.after_watch_callback(list_file)
+        self.service_instance.watcher_handler.after_watch_callback(list_file, self.service_instance)
         print 'watcher thread for service %s/%s stopped' % (service_id, service_name)
 
 

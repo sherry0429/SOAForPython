@@ -14,7 +14,7 @@ class WatcherHandler(object):
         pass
 
     @abstractmethod
-    def before_watch_callback(self):
+    def before_watch_callback(self, service_instance):
         """
         here define some operation before watcher start
         :return:
@@ -22,7 +22,7 @@ class WatcherHandler(object):
         pass
 
     @abstractmethod
-    def file_change_callback(self, file_list):
+    def file_change_callback(self, file_list, service_instance):
         """
         this callback will return file_list in work_dir every sec
         use this callback to make sure serivce's progress
@@ -31,7 +31,7 @@ class WatcherHandler(object):
         pass
 
     @abstractmethod
-    def after_watch_callback(self, file_list):
+    def after_watch_callback(self, file_list, service_instance):
         """
         this callback be called before watcher thread stop.
         it's will return all file_list this thread spawn.

@@ -64,7 +64,7 @@ class ServiceProgramTemplate(object):
             self.log_thing(error_msg)
             return
 
-    def prepare_input_file(self, now_service):
+    def prepare_input_file(self):
         # todo add base operation about this
         pass
         # get input file in param template

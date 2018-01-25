@@ -13,8 +13,28 @@
 + service will start and running like you define in your child classes
   + core.test.plugin have a service example, it's develop by other, we can not see / control / change / hook
 
-+ this framework can develop service's (develop by other) handler / callback quickly, call them simply. 
++ this framework can develop service's (develop by other) handler / callback quickly, call them simply.
 
+## About Data Stream
+
++ data stream include two types, out of work path or in work path
++ for example
+    + get a file in ftp or other (out of work path), you can write code in service.prepare_input_file
+    + upload result file (out of work path), you can write code in after_watcher_callback
++ notice that all callback & service's build and prepare_input_file in same work path, so make file name in param template, them will see each other
++ if here have a complicated example:
+```buildoutcfg
+serviceA -> data -> ServiceB -> data -> condition no pass-> serviceA -> data -> .... -> serviceB -> data -> pass
+```
++ in this case, service need data from other, and have condition & loop, how do we solve that?
+  + advice 1: if all services in same work path, just make this logical as a .py file, and this .py file as service be called
+  + advice 2: if all services in different work path, think about this:
+    1. services send one by one, from client to server
+    2. every service called have a result
+    + so you know, service's sequence control in client is better than server, like client receive a service result notification, and decide start next or return prev.
+
++ this frame don't support any data interface now, you need make them by your self, and call them in callback or service.prepare_build_file
++ all service's state you can changed in file_change_callback, it's in redis, you can get it any where, and do what you want.
 
 ---
 
@@ -35,18 +55,6 @@ ServiceC -> ServiceD ->
 
 Data stream is a question this frame try to solve too.
 
-## progress :
-
-+ add template about param / service
-+ add core / service / wathcer engine
-+ add a example about how to make a simple service
-
-## todo
-
-- add Data Persistence Interface
-- add Base prepare_input_file method
-- when a lots of service appear, and delay each other, make a base class to extend
-
 
 ## If you don't make sure you need this repo or not, you can see this:
 
@@ -61,9 +69,33 @@ this system is a small, pure and clear core, to make developer add new service s
 finally, developer only code some callback, fill template, and all services running on themselves way
 
 ## project structure
+----
+#### server side
 
-+ developer develop many handler about every service
-+ send param_template to start service and watcher
-+ use handler to define service lifecycle's operation
++ core engine, service engine, watcher engine
++ each service have one service process start by service engine, one watcher thread start by watcher engine
++ service pre work build by core engine
++ each service have param template, define it's detail, template must can be pickled
+
+#### develop side
+
++ can rewrite 3 callback about watcher:
+  + file_change_callback : it's be called every interval and return a service instance & work path's file list
+  + before_watch_callback : it's be called before watcher thread be started.
+  + after_watch_callback : it's be called when watcher thread will be stopped. 
++ 2 can rewrite 2 method about service
+  + build : it's be call in core, it's do pre work before start service
+  + prepare_input_file : it's be called after build, and it's prepare file that service need
+
+#### user side
+
++ can make a param template extends ServiceParamTemplate
++ can add new attributes in ServiceParamTemplate (develop side can use them)
+
+----
+
++ server side and user side is process isolation, core always running, developer make handler / service, core reload that two packages, and new version be built  
+
+
 
 

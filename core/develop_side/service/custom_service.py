@@ -27,12 +27,10 @@ file_change_callback()
     stream = f_.read()
 """
 from template import ServiceProgramTemplate
+from data_transfor import DataTransfor
 
 
 class CustomService(ServiceProgramTemplate):
-    """
-    this class is not be used now.
-    """
 
     def __init__(self):
         super(CustomService, self).__init__()
@@ -43,4 +41,4 @@ class CustomService(ServiceProgramTemplate):
         pass
 
     def prepare_input_file(self):
-        pass
+        DataTransfor.get_file(self.param_template.g_input_file)

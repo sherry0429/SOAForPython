@@ -29,5 +29,6 @@ class CoreEngine(object):
                 service = ServiceProgramTemplate()
                 service.set_param_template(param_data)
                 service.build()
+                service.prepare_input_file()
                 self.scheduler.publish_service(service)
             time.sleep(1)
