@@ -22,8 +22,8 @@ if __name__ == '__main__':
     conf_dict['redis']['db'] = 0
     redis = redis.StrictRedis('localhost', '6379', 0)
     services = {
-        'plugin/servicetest.py': 'servicetest.py',
-        'plugin/servicetesttwo.py': 'servicetesttwo.py'
+        'servicepool/servicetest.py': 'servicetest.py',
+        'servicepool/servicetesttwo.py': 'servicetesttwo.py'
     }
     for (k, v) in services.items():
         """

@@ -46,9 +46,9 @@ class ServiceBootstrap(Process):
         scheduler = ParamScheduler(self.conf)
         work_path = self.service.param_template.g_work_path
         service_id = self.service.param_template.g_service_id
-        service_name = self.service.param_template.s_service_name
+        service_path = self.service.param_template.g_service_path
         service_args = self.service.param_template.s_service_args
-        cmd = 'python %s/%s/%s' % (work_path, service_id, service_name)
+        cmd = 'python %s' % service_path
         for (k, v) in service_args.items():
             cmd += " %s=\'%s\'" % (k, v)
         p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -59,9 +59,8 @@ class ServiceBootstrap(Process):
             retval = p.wait()
             output_file.write('\n' + str(retval))
             output_file.close()
-            print 'service %s/%s has been finished, exit code %s' % (service_id,
-                                                                     service_name,
-                                                                     str(retval))
+            print 'service %s has been finished, exit code %s' % (service_path,
+                                                                  str(retval))
             scheduler.notice_service_finish(service_id, '0')
         except Exception, error_msg:
             print error_msg

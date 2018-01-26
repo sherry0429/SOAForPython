@@ -10,7 +10,6 @@ this class define list callbacks, use these callback can:
 """
 from common import RedisUtil
 from common import PickleUtil
-from template import ServiceProgramTemplate
 
 
 class ParamScheduler(object):
@@ -21,9 +20,8 @@ class ParamScheduler(object):
                                conf['redis']['db'])
 
     def publish_service(self, value):
-        if isinstance(value, ServiceProgramTemplate):
-            binary_data = self.encode_param(value)
-            self.redis.publish('add-service', binary_data)
+        binary_data = self.encode_param(value)
+        self.redis.publish('add-service', binary_data)
 
     def subscribe_service(self):
         self.redis.subscribe('add-service')
@@ -33,8 +31,7 @@ class ParamScheduler(object):
         if msg is not None:
             if msg['data'] != '' and msg['data'] is not None:
                 data = self.decode_param(msg['data'])
-                if isinstance(data, ServiceProgramTemplate):
-                    return data
+                return data
         return None
 
     def notice_service_finish(self, service_id, code):

@@ -26,21 +26,15 @@ file_change_callback()
     f_ = open(path)
     stream = f_.read()
 """
-from template import ServiceProgramTemplate
 
 
-class CustomService(ServiceProgramTemplate):
+class SERVICETESTService(object):
     """
     this class is not be used now.
     """
 
     def __init__(self):
-        super(CustomService, self).__init__()
-
-    def build(self):
-        # call this first, make sure all bases operation done there
-        super(CustomService, self).build()
         pass
 
     def prepare_input_file(self):
-        pass
+        print "prepare input file"
