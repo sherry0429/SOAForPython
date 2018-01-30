@@ -2,14 +2,66 @@
 
 ---
 
+## What's it is ?
+
+#### This is SOA Frame, Python version. It's a framework to standardize service's development, and make it's development templated. this project delay redis.
+
+Tips: think about this, you have many services but you can't debug them. 
+all your work is make these services run on multi computer, 
+and 1 project, 1 group services, many projects waiting you to develop ..., if you make code for every projects, it's will very slow,
+this frame is help the project like this can develop quickly and make 'services questions about other developer' go away.
+
+finally, make you add new service simply, just only code some callback, fill template, and all services running on themselves way
+
+---
+## use this frame you can get : 
+
++ service / handler support hot reload
++ process isolation modules
++ more speed of product
+
+---
+
+
+---
+
+## 'service' mean what ?
+
++ The service, means a program/function/script, with input/output, and all of them make a big system.
+
++ The system like this, or other complicated state
+```
+ServiceA -> ServiceB ->
+                           ->  ServiceE
+ServiceC -> ServiceD ->
+```
+
+---
+## DevelopGuide:
+
++ make new handler / service like develop_side's handler & service packages's classes
+  + if your service named 'jack', you need:
+      + jack_handler.py and JACKHandler class in it
+      + jacktest.py and JACKSERVICE class in it
++ if you need some custom operation, add it to common package, and call them in your handler / service
++ make other's service to service_core.servicepool, like 'jack.py'
+now boot this frame by these steps:
+    1. run src.start.py
+    2. run service_core.start.py
+    3. run user_side.src.service_example.py 
+        + don't forget make s_service_name as 'jack'!
+        + don't forget make service_path as 'servicepool/jack.py'!
+and you can see some info print to command
+
+---
+
 ## project structure
 ----
 #### server side
 
-+ core engine, service engine, watcher engine
++ core engine, service engine
 + each service have one service process start by service engine, one watcher thread start by watcher engine
-+ service pre work build by core engine
-+ each service have param template, define it's detail, template must can be pickled
++ each service need param template, the template define it's detail, template must can be pickled
 
 #### develop side
 
@@ -17,14 +69,14 @@
   + file_change_callback : it's be called every interval and return a service instance & work path's file list
   + before_watch_callback : it's be called before watcher thread be started.
   + after_watch_callback : it's be called when watcher thread will be stopped. 
-+ 2 can rewrite 2 method about service
-  + build : it's be call in core, it's do pre work before start service
++ can rewrite 1 method about service
   + prepare_input_file : it's be called after build, and it's prepare file that service need
+
 
 #### user side
 
 + can make a param template extends ServiceParamTemplate
-+ can add new attributes in ServiceParamTemplate (develop side can use them)
++ can add new attributes in ServiceParamTemplate (so develop side can use them)
 
 ----
 
@@ -32,18 +84,6 @@
 
 ---
 
-## UserGuide:
-
-+ extend WatcherHandler / ServiceProgramTemplate
-  + src.hander, src.service are two examples
-+ start core
-  + src.start_core.py
-+ send ServiceParamTemplate class by redis
-  + core.test.src 
-+ service will start and running like you define in your child classes
-  + core.test.plugin have a service example, it's develop by other, we can not see / control / change / hook
-
-+ this framework can develop service's (develop by other) handler / callback quickly, call them simply.
 
 ## About Data Stream
 
@@ -65,37 +105,3 @@ serviceA -> data -> ServiceB -> data -> condition no pass-> serviceA -> data -> 
 
 + this frame don't support any data interface now, you need make them by your self, and call them in callback or service.prepare_build_file
 + all service's state you can changed in file_change_callback, it's in redis, you can get it any where, and do what you want.
-
----
-
-## What's it is ?
-
-#### This is SOA Frame, Python version. It's a framework to standardize service's development, and make it's development templated. this project delay redis.
-
----
-
-+ The service, means a program/function/script, with input/output, and all of them make a big system.
-
-+ The system like this, or other complicated state
-```
-ServiceA -> ServiceB ->
-                           ->  ServiceE
-ServiceC -> ServiceD ->
-```
-
-Data stream is a question this frame try to solve too.
-
-
-## If you don't make sure you need this repo or not, you can see this:
-
-+ our system have a lots of service, and it's hard to manage.
-+ service is other's program, we only can run it.
-+ before service start, we need make dir, copy exe, get input files
-+ services between them is same, they just run use input, and have some output files.
-+ our system concern how to know service's progress and data recycle
-+ service maybe delay on each other, it's make a very complicated data stream
-
-this system is a small, pure and clear core, to make developer add new service simply, 
-finally, developer only code some callback, fill template, and all services running on themselves way
-
-

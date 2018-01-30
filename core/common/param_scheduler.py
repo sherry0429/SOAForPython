@@ -8,8 +8,8 @@ this class define list callbacks, use these callback can:
 2.do something when service running (receive list file on workpath)
 3.do something before watch stop (a watch stop when handler return -1 or service is stopped
 """
-from common import RedisUtil
 from common import PickleUtil
+from common import RedisUtil
 
 
 class ParamScheduler(object):
@@ -20,8 +20,8 @@ class ParamScheduler(object):
                                conf['redis']['db'])
 
     def publish_service(self, value):
-        binary_data = self.encode_param(value)
-        self.redis.publish('add-service', binary_data)
+        # binary_data = self.encode_param(value)
+        self.redis.publish('add-service', value)
 
     def subscribe_service(self):
         self.redis.subscribe('add-service')
@@ -30,8 +30,8 @@ class ParamScheduler(object):
         msg = self.redis.get_message()
         if msg is not None:
             if msg['data'] != '' and msg['data'] is not None:
-                data = self.decode_param(msg['data'])
-                return data
+                # data = self.decode_param(msg['data'])
+                return msg['data']
         return None
 
     def notice_service_finish(self, service_id, code):

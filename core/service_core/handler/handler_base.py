@@ -3,17 +3,13 @@
 """
 Copyright (C) 2017 tianyou pan <sherry0429 at SOAPython>
 """
-from abc import ABCMeta, abstractmethod
 
 
 class WatcherHandler(object):
 
-    __metaclass__ = ABCMeta
-
     def __init__(self):
         pass
 
-    @abstractmethod
     def before_watch_callback(self, service_instance):
         """
         here define some operation before watcher start
@@ -21,7 +17,6 @@ class WatcherHandler(object):
         """
         pass
 
-    @abstractmethod
     def file_change_callback(self, file_list, service_instance):
         """
         this callback will return file_list in work_dir every sec
@@ -30,7 +25,6 @@ class WatcherHandler(object):
         """
         pass
 
-    @abstractmethod
     def after_watch_callback(self, file_list, service_instance):
         """
         this callback be called before watcher thread stop.

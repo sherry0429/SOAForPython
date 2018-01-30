@@ -5,7 +5,7 @@ Copyright (C) 2017 tianyou pan <sherry0429 at SOAPython>
 """
 from src import ServiceParamTemplate
 import redis
-from scheduler import ParamScheduler
+from common import ParamScheduler
 
 
 if __name__ == '__main__':

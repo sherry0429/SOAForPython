@@ -3,7 +3,7 @@
 """
 Copyright (C) 2017 tianyou pan <sherry0429 at SOAPython>
 """
-from engine import CoreEngine
+from engine import ServiceEngine
 
 
 if __name__ == '__main__':
@@ -12,5 +12,6 @@ if __name__ == '__main__':
     conf_dict['redis']['ip'] = 'localhost'
     conf_dict['redis']['port'] = 6379
     conf_dict['redis']['db'] = 0
-    engine = CoreEngine(conf_dict)
-    engine.start()
+    s_engine = ServiceEngine(conf_dict)
+    s_engine.start()
+    print "Service Engine Start ..."

@@ -41,7 +41,7 @@ class ServiceProgramTemplate(object):
             self.log_thing("workpath is existed")
             return
         try:
-            os.mkdir(work_path)
+            os.makedirs(work_path)
         except Exception, error_msg:
             self.log_thing(error_msg)
             return
