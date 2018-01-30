@@ -80,7 +80,7 @@ and you can see some info print to command
 
 ----
 
-![Image text](https://raw.github.com/sherry0429/repositpry/master/SOAForPython/img/structure.png)
+![project structure](SOAForPython/core/img/structure.png)
 ---
 
 
