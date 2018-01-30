@@ -80,7 +80,7 @@ and you can see some info print to command
 
 ----
 
-![project structure](SOAForPython/core/img/structure.png)
+![project structure](https://github.com/sherry0429/SOAForPython/raw/master/core/img/structure.png)
 ---
 
 
