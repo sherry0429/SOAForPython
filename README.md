@@ -80,8 +80,7 @@ and you can see some info print to command
 
 ----
 
-+ server side and user side is process isolation, core always running, developer make handler / service, core reload that two packages, and new version be built  
-
+![Image text](https://raw.github.com/sherry0429/repositpry/master/SOAForPython/img/structure.png)
 ---
 
 
