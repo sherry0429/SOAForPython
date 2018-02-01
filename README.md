@@ -4,7 +4,7 @@
 
 ## What's it is ?
 
-#### This is SOA Frame, Python version. It's a framework to standardize service's development, and make it's development templated. this project relay on redis.
+#### This is SOA Frame, Python version. It's a framework to standardize service's development, and make it's development templated. this project delay redis.
 
 Tips: think about this, you have many services but you can't debug them. 
 all your work is make these services run on multi computer, 
@@ -80,7 +80,7 @@ and you can see some info print to command
 
 ----
 
-![Image text](https://raw.github.com/sherry0429/repositpry/master/SOAForPython/img/structure.png)
+![project structure](https://github.com/sherry0429/SOAForPython/raw/master/core/img/structure.png)
 ---
 
 
@@ -100,7 +100,7 @@ serviceA -> data -> ServiceB -> data -> condition no pass-> serviceA -> data -> 
   + advice 2: if all services in different work path, think about this:
     1. services send one by one, from client to server
     2. every service called have a result
-    + so you know, service's sequence control in client is better than server, like client receive a service result notification, and decide start next or return prev location.
+    + so you know, service's sequence control in client is better than server, like client receive a service result notification, and decide start next or return prev.
 
-+ this frame don't support any data interface now, you need make them by your self, and call them in callback
++ this frame don't support any data interface now, you need make them by your self, and call them in callback or service.prepare_build_file
 + all service's state you can changed in file_change_callback, it's in redis, you can get it any where, and do what you want.
