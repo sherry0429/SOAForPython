@@ -4,15 +4,19 @@
 Copyright (C) 2017 tianyou pan <sherry0429 at SOAPython>
 this class is service center engine, it's will call service one by one
 """
-from common import ParamScheduler
 from multiprocessing import Process
 from threading import Thread
-from template import ServiceProgramTemplate
+from service import ServiceProgramTemplate
+from template import ServiceParamTemplate
 import importlib
 import time
 import subprocess
 import os
 from handler import WatcherHandler
+from common import RedisUtil
+from Queue import Queue
+from common import MsgReceiverFromBus, MsgSenderToBus
+from message import BaseMessage
 
 
 class ServiceEngine(Process):
@@ -20,29 +24,49 @@ class ServiceEngine(Process):
     def __init__(self, conf):
         super(ServiceEngine, self).__init__()
         self.conf = conf
-        self.services_watcher = dict()
+        self.services_process = dict()
+        self.module_name = "service_engine"
 
     def log_thing(self, log_str):
         print log_str
 
     def run(self):
-        scheduler = ParamScheduler(self.conf)
-        scheduler.subscribe_service()
+        redis = RedisUtil(self.conf['redis']['ip'],
+                          self.conf['redis']['port'],
+                          self.conf['redis']['db'])
+        recv_queue = Queue()
+        send_queue = Queue()
+        sender_th = MsgSenderToBus(redis, self.module_name, send_queue)
+        sender_th.start()
+        receiver_th = MsgReceiverFromBus(redis, self.module_name, recv_queue)
+        receiver_th.start()
+
         while True:
-            msg = scheduler.get_new_service()
-            if msg is not None:
-                param_data = scheduler.decode_param(msg)
-                service_process = ServiceBootstrap(param_data, self.conf)
-                service_process.start()
+            msg = recv_queue.get()
+            if msg is not None and isinstance(msg, BaseMessage):
+                msg.direction = msg.direction[1:]
+                service_process = None
+                try:
+                    if isinstance(msg.content, ServiceParamTemplate):
+                        service_process = ServiceBootstrap(msg.content)
+                        service_process.daemon = True
+                        service_process.start()
+                except Exception, error_msg:
+                    print error_msg
+                if service_process is not None:
+                    self.services_process[msg.msg_id] = service_process
+                    msg.return_code = 0
+                else:
+                    msg.return_code = -1
+                send_queue.put(msg)
             time.sleep(1)
 
 
 class ServiceBootstrap(Process):
 
-    def __init__(self, param, conf):
+    def __init__(self, param):
         super(ServiceBootstrap, self).__init__()
         self.param = param
-        self.conf = conf
         self.service = None
 
     def log_thing(self, log_str):
@@ -56,7 +80,7 @@ class ServiceBootstrap(Process):
             base_class = WatcherHandler()
 
         for m_callback in dir(base_class):
-            if m_callback[0] != "_":
+            if m_callback[-1] != "_":
                 if hasattr(develop_class, m_callback):
                     develop_value = getattr(develop_class, m_callback)
                     if develop_value is not None:
@@ -66,13 +90,13 @@ class ServiceBootstrap(Process):
     def build_service_instance(self, param_template):
         try:
             service_name = param_template.s_service_name
-            service_module = importlib.import_module('develop_side.service.servicetest')
+            service_module = importlib.import_module('develop_side.service.%s' % service_name.lower())
             reload(service_module)
             service_class = getattr(service_module, "%sService" % service_name.upper())
             developer_service = service_class()
             service_base = self.rebuild_class(developer_service, "service")
 
-            handler_module = importlib.import_module('develop_side.handler.servicetest_handler')
+            handler_module = importlib.import_module('develop_side.handler.%s_handler' % service_name.lower())
             reload(handler_module)
             handler_class = getattr(handler_module, '%sHandler' % service_name.upper())
             develop_handler = handler_class()
@@ -103,9 +127,8 @@ class ServiceBootstrap(Process):
         self.log_thing("runner : %s" % str(self.service.__dict__))
         if self.service.param_template.o_watcher_enabled is True:
             self.log_thing("watcher : %s" % str(self.service.__dict__))
-            service_watcher = WatcherThread(self.service, self.conf)
+            service_watcher = WatcherThread(self.service)
             service_watcher.start()
-        scheduler = ParamScheduler(self.conf)
         work_path = self.service.param_template.g_work_path
         service_id = self.service.param_template.g_service_id
         service_path = self.service.param_template.g_service_path
@@ -122,11 +145,10 @@ class ServiceBootstrap(Process):
             output_file.write('\n' + str(retval))
             output_file.close()
             print 'service %s has been finished, waiting watcher thread ...' % service_path
-            scheduler.notice_service_finish(service_id, '0')
+            self.service.status = 0
         except Exception, error_msg:
             print error_msg
-        scheduler.notice_service_finish(service_id, '-1')
-
+            self.service.status = -1
         if service_watcher is not None:
             while True:
                 if not service_watcher.isAlive():
@@ -136,14 +158,16 @@ class ServiceBootstrap(Process):
 
 class WatcherThread(Thread):
 
-    def __init__(self, service_instance, conf):
+    """
+    这里最终会变成一个独立的文件监控模块，使用sender线程，将Service的服务变化通知到其他地方
+    """
+
+    def __init__(self, service_instance):
         super(WatcherThread, self).__init__()
-        self.conf = conf
         self.service_instance = service_instance
         self.interval = self.service_instance.param_template.o_watcher_interal
 
     def run(self):
-        scheduler = ParamScheduler(self.conf)
         self.service_instance.watcher_handler.before_watch_callback(self.service_instance)
         service_id = self.service_instance.param_template.g_service_id
         service_name = self.service_instance.param_template.s_service_name
@@ -153,8 +177,8 @@ class WatcherThread(Thread):
             while True:
                 list_file = os.listdir(workpath)
                 user_signal = self.service_instance.watcher_handler.file_change_callback(len(list_file), self.service_instance)
-                if user_signal == -1 or scheduler.check_service_state(service_id) is not None:
+                if user_signal == -1 or self.service_instance.status == 0:
                     break
                 time.sleep(self.interval)
         self.service_instance.watcher_handler.after_watch_callback(list_file, self.service_instance)
-        print 'watcher thread for service %s/%s stopped' % (service_id, service_name)
+        print 'watcher thread for service %s / %s stopped' % (service_id, service_name)

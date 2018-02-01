@@ -13,6 +13,7 @@ class ServiceProgramTemplate(object):
     def __init__(self):
         self.param_template = None
         self.watcher_handler = None
+        self.status = None
 
     def log_thing(self, log_str):
         print log_str

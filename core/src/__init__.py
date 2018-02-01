@@ -3,8 +3,8 @@
 """
 Copyright (C) 2017 tianyou pan <sherry0429 at SOAPython>
 """
-from template import ServiceProgramTemplate, ServiceParamTemplate
+from template import ServiceParamTemplate
+from engine import CoreEngine
 
-
-__all__ = ['ServiceParamTemplate',
-           'ServiceProgramTemplate']
+__all__ = ['CoreEngine',
+           'ServiceParamTemplate']

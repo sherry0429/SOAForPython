@@ -3,7 +3,7 @@
 """
 Copyright (C) 2017 tianyou pan <sherry0429 at SOAPython>
 """
-from engine import ServiceEngine
 
 
-__all__ = ['ServiceEngine']
+if __name__ == '__main__':
+    print "hahahaha"
