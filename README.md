@@ -51,6 +51,9 @@ now boot this frame by these steps:
     3. run user_side.src.service_example.py 
         + don't forget make s_service_name as 'jack'!
         + don't forget make service_path as 'servicepool/jack.py'!
+also, you can simple by these steps to bootstrap a standalone program:
+    1. run start_all.py in standalone package
+    2. run user_side.src.service_example.py
 and you can see some info print to command
 
 ---
@@ -59,7 +62,7 @@ and you can see some info print to command
 ----
 #### server side
 
-+ core engine, service engine
++ core engine, service engine, and msg bus
 + each service have one service process start by service engine, one watcher thread start by watcher engine
 + each service need param template, the template define it's detail, template must can be pickled
 
@@ -71,12 +74,14 @@ and you can see some info print to command
   + after_watch_callback : it's be called when watcher thread will be stopped. 
 + can rewrite 1 method about service
   + prepare_input_file : it's be called after build, and it's prepare file that service need
++ structure msg extend BaseMessage, make custom class as BaseMessage.content, deal with it in your modules.
 
 
 #### user side
 
 + can make a param template extends ServiceParamTemplate
 + can add new attributes in ServiceParamTemplate (so develop side can use them)
+
 
 ----
 
