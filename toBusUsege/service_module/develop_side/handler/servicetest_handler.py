@@ -8,7 +8,7 @@ Copyright (C) 2017 tianyou pan <sherry0429 at SOAPython>
 class SERVICETESTHandler(object):
 
     def __init__(self):
-        super(SERVICETESTHandler, self).__init__()
+        pass
 
     def file_change_callback(self, file_list, service_instance):
         print file_list
