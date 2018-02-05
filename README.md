@@ -1,4 +1,4 @@
-# SOAForPython
+# tobus
 
 ---
 
@@ -121,8 +121,6 @@ ServiceC -> ServiceD ->
 
 ----
 
-![project structure](https://github.com/sherry0429/SOAForPython/raw/master/core/img/structure.png)
----
 
 + this frame don't support any data interface now, you need make them by your self, and call them in callback or service.prepare_build_file
 + all service's state you can changed in file_change_callback, it's in redis, you can get it any where, and do what you want.
