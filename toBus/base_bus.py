@@ -50,7 +50,7 @@ class MsgReceiver(Thread):
                 # use Controller, to judge every msg
                 content = pickle.loads(msg)
                 self.msg_recv_callback(content)
-                if isinstance(content.__class__.__bases__[0], BaseMessage):
+                if isinstance(content, BaseMessage) or isinstance(content.__class__.__bases__[0], BaseMessage):
                     if content.before is not None:
                         self.access_modules.add(content.before)
                     if len(content.direction) != 0:

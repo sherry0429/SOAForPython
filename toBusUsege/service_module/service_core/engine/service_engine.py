@@ -27,13 +27,27 @@ class ServiceEngineModule(ModuleBase):
         print str_log
 
     def start(self):
+        th = ServiceMsgCheckThread(self.send_queue, self.recv_queue)
+        th.start()
+
+
+
+class ServiceMsgCheckThread(Thread):
+
+    def __init__(self, send_queue, recv_queue):
+        super(ServiceMsgCheckThread, self).__init__()
+        self.send_queue = send_queue
+        self.recv_queue = recv_queue
+        self.services_process = dict()
+
+    def run(self):
         while True:
             msg = self.recv_queue.get()
             if msg is not None and isinstance(msg, BaseMessage):
                 msg.direction = msg.direction[1:]
                 service_process = None
                 try:
-                    if isinstance(msg.content, ServiceParamTemplate):
+                    if msg.content.__class__.__name__ == "ServiceParamTemplate":
                         service_process = ServiceBootstrap(msg.content)
                         service_process.daemon = True
                         service_process.start()
@@ -110,9 +124,9 @@ class ServiceBootstrap(Process):
         if self.service is None:
             self.log_thing("service instance is None")
             return
-        self.log_thing("runner : %s" % str(self.service.__dict__))
+        self.log_thing("runner : %s" % str(self.service.param_template.__dict__))
         if self.service.param_template.o_watcher_enabled is True:
-            self.log_thing("watcher : %s" % str(self.service.__dict__))
+            self.log_thing("watcher : %s" % str(self.service.param_template.__dict__))
             service_watcher = WatcherThread(self.service)
             service_watcher.start()
         work_path = self.service.param_template.g_work_path
